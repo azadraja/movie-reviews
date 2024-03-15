@@ -57,7 +57,7 @@ const CommentsSection = ({ movieId }: { movieId: number }) => {
     <div>Loading...</div>
   ) : (
     <div className="flex w-full flex-col gap-4">
-      {data.comments.map((e: comment) => {
+      {(data?.comments??[]).map((e: comment) => {
         let sanitizedData;
         try {
           sanitizedData = () => ({
