@@ -1,7 +1,5 @@
 "use client";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
-import React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const Pagination = ({ totalPages }: { totalPages: number }) => {
   const searchParams = useSearchParams();
