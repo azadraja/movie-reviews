@@ -1,10 +1,10 @@
 "use client";
-import client from "@/lib/apollo-client";
-import DOMPurify from "dompurify";
 import { useQuery } from "@apollo/client";
-import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
+import DOMPurify from "dompurify";
 import draftToHtml from "draftjs-to-html";
-// import { getClient } from "@/lib/apollo-client";
+import gql from "graphql-tag";
+import MyEditor from "../MyEditor/MyEditor";
+
 type comment = {
   id: number;
   movieId: number;
@@ -17,22 +17,6 @@ type comment = {
 type Data = {
   comments: Array<comment>;
 };
-
-import gql from "graphql-tag";
-import MyEditor from "../MyEditor/MyEditor";
-
-const createCommentMutation = gql`
-  mutation Mutation($movieId: Int!, $content: JSON!, $author: String!) {
-    createComment(movieId: $movieId, content: $content, author: $author) {
-      id
-      movieId
-      content
-      author
-      createdAt
-      updatedAt
-    }
-  }
-`;
 
 const commentsQuery = gql`
   query Query($movieId: Int!) {
@@ -52,12 +36,11 @@ const CommentsSection = ({ movieId }: { movieId: number }) => {
     variables: { movieId: movieId },
   });
 
-  console.log(data, "picard", loading, error, movieId);
   return loading ? (
     <div>Loading...</div>
   ) : (
     <div className="flex w-full flex-col gap-4">
-      {(data?.comments??[]).map((e: comment) => {
+      {(data?.comments ?? []).map((e: comment) => {
         let sanitizedData;
         try {
           sanitizedData = () => ({

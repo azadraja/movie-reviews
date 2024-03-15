@@ -1,15 +1,15 @@
 "use client";
 
-import React from "react";
-import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
-import { Editor } from "react-draft-wysiwyg";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import gql from "graphql-tag";
 import {
   ApolloQueryResult,
   OperationVariables,
   useMutation,
 } from "@apollo/client";
+import { EditorState, convertToRaw } from "draft-js";
+import gql from "graphql-tag";
+import React from "react";
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 // const emptyContentState = convertFromRaw({
 //   entityMap: {},
@@ -58,11 +58,7 @@ const MyEditor = ({
 
   React.useEffect(() => {
     refetch();
-  }, [data]);
-
-  React.useEffect(() => {
-    console.log(convertToRaw(editorState.getCurrentContent()));
-  }, [editorState]);
+  }, [data, refetch]);
 
   const handleSubmit = () => {
     if (!author || editorState.getCurrentContent().isEmpty()) return;

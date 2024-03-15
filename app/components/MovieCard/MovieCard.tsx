@@ -1,9 +1,7 @@
-import React from "react";
-import styles from "./MovieCard.module.css";
-import { Result } from "@/app/common/types";
-import { IMAGE_BASE_URL, getPosterUrl } from "@/config";
-import Image from "next/image";
+import { Result } from "@/common/types";
+import { getPosterUrl } from "@/config";
 import Poster from "../Poster/Poster";
+import styles from "./MovieCard.module.css";
 
 const MovieCard = (props: Result) => {
   const imageUrl = props.poster_path

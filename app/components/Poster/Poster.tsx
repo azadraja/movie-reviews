@@ -1,5 +1,4 @@
 import Image from "next/image";
-import React from "react";
 
 const Poster = ({ imageUrl, title }: { imageUrl: string; title: string }) => {
   return (

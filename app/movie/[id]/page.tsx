@@ -1,13 +1,11 @@
-import { Credits, Movie } from "@/app/common/types";
 import CommentsSection from "@/app/components/CommentsSection/CommentsSection";
-import MyEditor from "@/app/components/MyEditor/MyEditor";
 import Poster from "@/app/components/Poster/Poster";
+import { Credits, Movie } from "@/common/types";
 import {
+  getBackdropUrl,
   getCreditsUrl,
   getMovieUrl,
-  getBackdropUrl,
   getPosterUrl,
-  getreleaseDatesUrl,
 } from "@/config";
 
 async function getData(url: string) {
@@ -22,7 +20,6 @@ async function getData(url: string) {
 export default async function Page({ params }: { params: { id: string } }) {
   const movieEndpoint: string = getMovieUrl(params.id);
   const creditsEndpoint: string = getCreditsUrl(params.id);
-
   const movie: Movie = await getData(movieEndpoint);
   const credits: Credits = await getData(creditsEndpoint);
   const imageUrl = movie.poster_path
@@ -64,6 +61,7 @@ export default async function Page({ params }: { params: { id: string } }) {
       <div className="flex flex-wrap gap-5 justify-center items-center mt-10">
         {credits.cast.map((e) => (
           <div
+            key={e.name}
             style={{ width: "240px", height: "auto" }}
             className="rounded-lg"
           >

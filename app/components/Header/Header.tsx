@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import SearchInput from "../SearchInput/SearchInput";
 import Link from "next/link";
 
@@ -8,7 +8,9 @@ const Header = () => {
       <Link href={"/"}>
         <span className="text-zinc-900">Movie</span>
       </Link>
-      <SearchInput />
+      <Suspense fallback={<>Loading...</>}>
+        <SearchInput />
+      </Suspense>
     </nav>
   );
 };
