@@ -84,7 +84,6 @@ export default async function Page({ params }: { params: { id: string } }) {
         ))}
       </div>
       <div className="mb-28">
-        <h1 className="text-2xl text-zinc-950">Comments</h1>
         <CommentsSection movieId={movie.id} />
       </div>
     </div>

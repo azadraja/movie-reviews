@@ -4,6 +4,7 @@ import DOMPurify from "dompurify";
 import draftToHtml from "draftjs-to-html";
 import gql from "graphql-tag";
 import MyEditor from "../MyEditor/MyEditor";
+import styles from "./CommentsSection.module.css";
 
 type comment = {
   id: number;
@@ -13,6 +14,17 @@ type comment = {
   createdAt: string;
   updatedAt: string;
 };
+
+// Format the date string
+const formattedDate = (date: Date) =>
+  date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
 
 type Data = {
   comments: Array<comment>;
@@ -39,29 +51,35 @@ const CommentsSection = ({ movieId }: { movieId: number }) => {
   return loading ? (
     <div>Loading...</div>
   ) : (
-    <div className="flex w-full flex-col gap-4">
-      {(data?.comments ?? []).map((e: comment) => {
-        let sanitizedData;
-        try {
-          sanitizedData = () => ({
-            __html: DOMPurify.sanitize(
-              draftToHtml(JSON.parse(JSON.stringify(e.content)))
-            ),
-          });
-        } catch (error) {}
+    <div className={styles.commentsContainer}>
+      <h1 className="text-2xl text-zinc-950">Comments</h1>
+      <div className="flex flex-col gap-5">
+        {(data?.comments ?? []).map((e: comment) => {
+          let sanitizedData;
+          try {
+            sanitizedData = () => ({
+              __html: DOMPurify.sanitize(
+                draftToHtml(JSON.parse(JSON.stringify(e.content)))
+              ),
+            });
+          } catch (error) {}
 
-        return (
-          <div className="commentsContainer text-zinc-950 text-lg" key={e.id}>
-            {e.author}
-            <div
-              className="actualComment border border-solid border-black"
-              dangerouslySetInnerHTML={
-                sanitizedData ? sanitizedData() : undefined
-              }
-            />
-          </div>
-        );
-      })}
+          return (
+            <div className={styles.eachCommentContainer} key={e.id}>
+              {`${e.author} says...`}
+              <div
+                className={styles.actualComment}
+                dangerouslySetInnerHTML={
+                  sanitizedData ? sanitizedData() : undefined
+                }
+              />
+              <div className={styles.date}>{`at ${formattedDate(
+                new Date(parseInt(e.updatedAt))
+              )}`}</div>
+            </div>
+          );
+        })}
+      </div>
       <MyEditor refetch={refetch} movieId={movieId} />
     </div>
   );
