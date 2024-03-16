@@ -14,11 +14,15 @@ const MovieList = () => {
 
   React.useEffect(() => {
     (async () => {
-      const res = await fetch(
-        `/popular?q=${searchQuery ?? ""}&page=${page ?? 1}`
-      );
-      const data: any = await res.json();
-      setData(data);
+      try {
+        const res = await fetch(
+          `/popular?q=${searchQuery ?? ""}&page=${page ?? 1}`
+        );
+        const data: any = await res.json();
+        setData(data);
+      } catch (error) {
+        console.error("Error occured 😱", error);
+      }
     })();
   }, [searchQuery, page]);
   return (
