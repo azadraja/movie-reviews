@@ -10,6 +10,7 @@ import gql from "graphql-tag";
 import React from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import styles from "./MyEditor.module.css";
 
 // const emptyContentState = convertFromRaw({
 //   entityMap: {},
@@ -48,6 +49,7 @@ const MyEditor = ({
     variables?: Partial<OperationVariables> | undefined
   ) => Promise<ApolloQueryResult<any>>;
 }) => {
+  const [isToolbarHidden, setIsToolbarHidden] = React.useState(true);
   const [createComment, { data, loading, error }] = useMutation(
     createCommentMutation
   );
@@ -74,27 +76,34 @@ const MyEditor = ({
   };
 
   return (
-    <div className="App">
+    <div className={styles.container}>
       <Editor
         editorState={editorState}
         onEditorStateChange={setEditorState}
         wrapperClassName="wrapper-class"
         editorClassName="editor-class"
         toolbarClassName="toolbar-class"
+        placeholder="Add a comment"
+        toolbarHidden={isToolbarHidden}
+        onFocus={() => setIsToolbarHidden(false)}
+        onBlur={() => setIsToolbarHidden(true)}
         toolbar={{
           options: ["inline", "list", "textAlign"],
         }}
       />
-      <label>
-        Author:
-        <input
-          type="text"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-          name="author"
-        />
-      </label>
-      <button onClick={handleSubmit}>Submit</button>
+      <input
+        className={styles.author_input}
+        type="text"
+        value={author}
+        onChange={(e) => setAuthor(e.target.value)}
+        name="author"
+        placeholder="Author"
+      />
+      <div className="flex justify-center items-center mt-5">
+        <button className={styles.button} onClick={handleSubmit}>
+          Submit
+        </button>
+      </div>
     </div>
   );
 };

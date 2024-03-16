@@ -1,0 +1,24 @@
+.commentsContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.eachCommentContainer {
+  width: 45vw;
+  color: #333;
+  border-bottom: 1px solid #cbcbcb;
+}
+
+.actualComment {
+  margin-top: 10px;
+  color: #999;
+}
+
+.date {
+  color: #c6c6c6;
+  font-size: 0.7rem;
+  font-style: italic;
+}
