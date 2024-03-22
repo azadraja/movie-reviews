@@ -1,5 +1,6 @@
 "use client";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
+import React from "react";
 import DOMPurify from "dompurify";
 import draftToHtml from "draftjs-to-html";
 import gql from "graphql-tag";
@@ -30,6 +31,16 @@ type Data = {
   comments: Array<comment>;
 };
 
+// updateComment(id: ID!, movieId: Int!, content: JSON!, author: String!): Comment!
+
+const deleteCommentMutation = gql`
+  mutation Mutation($id: Int!) {
+    deleteComment(id: $id) {
+      id
+    }
+  }
+`;
+
 const commentsQuery = gql`
   query Query($movieId: Int!) {
     comments(movieId: $movieId) {
@@ -47,6 +58,27 @@ const CommentsSection = ({ movieId }: { movieId: number }) => {
   const { data, loading, error, refetch } = useQuery(commentsQuery, {
     variables: { movieId: movieId },
   });
+
+  const [
+    deleteComment,
+    { data: deleteData, loading: deleteLoading, error: deleteError },
+  ] = useMutation(deleteCommentMutation);
+
+  const [edit, setEdit] = React.useState();
+
+  const handleEdit = (data: any) => {
+    console.log(data);
+    setEdit(data);
+  };
+
+  React.useEffect(() => {
+    refetch();
+  }, [deleteData]);
+
+  const handleDelete = (id: number) => {
+    if (!id) return;
+    deleteComment({ variables: { id: parseInt(id + "") } });
+  };
 
   return loading ? (
     <div>Loading...</div>
@@ -73,14 +105,23 @@ const CommentsSection = ({ movieId }: { movieId: number }) => {
                   sanitizedData ? sanitizedData() : undefined
                 }
               />
-              <div className={styles.date}>{`at ${formattedDate(
-                new Date(parseInt(e.updatedAt))
-              )}`}</div>
+              <div className={styles.date}>
+                {`at ${formattedDate(new Date(parseInt(e.updatedAt)))}`}
+                <div>
+                  <button onClick={() => handleEdit(e)}>✏️</button>
+                  <button onClick={() => handleDelete(e.id)}>🗑️</button>
+                </div>
+              </div>
             </div>
           );
         })}
       </div>
-      <MyEditor refetch={refetch} movieId={movieId} />
+      <MyEditor
+        setEdit={setEdit}
+        editData={edit}
+        refetch={refetch}
+        movieId={movieId}
+      />
     </div>
   );
 };
