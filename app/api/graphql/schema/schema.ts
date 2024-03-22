@@ -7,6 +7,18 @@ export const typeDefs = `
     author: String
     createdAt: String
     updatedAt: String
+    replies: [Reply]
+  }
+
+  type Reply {
+    id: ID
+    commentId: Int
+    replyId: Int
+    content: JSON
+    author: String
+    createdAt: String
+    updatedAt: String
+    replies: [Reply]
   }
 
   type Query {
@@ -15,7 +27,8 @@ export const typeDefs = `
 
   type Mutation {
     createComment(movieId: Int!, content: JSON!, author: String!): Comment!
-    deleteComment(id: ID!): Comment!
-    updateComment(id: ID!, movieId: Int!, content: JSON!, author: String!): Comment!
+    createReply(commentId: Int, replyId: Int, content: JSON!, author: String!): Reply!
+    deleteComment(id: Int!): Comment!
+    updateComment(id: Int!, movieId: Int!, content: JSON!, author: String!): Comment!
   }
 `;

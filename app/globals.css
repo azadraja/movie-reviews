@@ -11,6 +11,9 @@
 body {
   color: rgb(var(--foreground-rgb));
 }
+div.public-DraftStyleDefault-block {
+  margin: 0;
+}
 
 div.DraftEditor-root {
   background-color: rgb(255, 255, 255);

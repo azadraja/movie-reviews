@@ -5,27 +5,36 @@ import {
   OperationVariables,
   useMutation,
 } from "@apollo/client";
-import { EditorState, convertToRaw } from "draft-js";
+import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
 import gql from "graphql-tag";
 import React from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import styles from "./MyEditor.module.css";
+import { setegid } from "process";
 
-// const emptyContentState = convertFromRaw({
-//   entityMap: {},
-//   blocks: [
-//     {
-//       text: "",
-//       key: "foo",
-//       type: "unstyled",
-//       entityRanges: [],
-//       depth: 0,
-//       inlineStyleRanges: [],
-//       data: {},
-//     },
-//   ],
-// });
+const updateCommentMutation = gql`
+  mutation Mutation(
+    $id: Int!
+    $movieId: Int!
+    $content: JSON!
+    $author: String!
+  ) {
+    updateComment(
+      id: $id
+      movieId: $movieId
+      content: $content
+      author: $author
+    ) {
+      id
+      movieId
+      content
+      author
+      createdAt
+      updatedAt
+    }
+  }
+`;
 
 const createCommentMutation = gql`
   mutation Mutation($movieId: Int!, $content: JSON!, $author: String!) {
@@ -43,16 +52,26 @@ const createCommentMutation = gql`
 const MyEditor = ({
   movieId,
   refetch,
+  setEdit,
+  editData,
 }: {
   movieId: number;
   refetch: (
     variables?: Partial<OperationVariables> | undefined
   ) => Promise<ApolloQueryResult<any>>;
+  editData: any;
+  setEdit: React.Dispatch<React.SetStateAction<any>>;
 }) => {
   const [isToolbarHidden, setIsToolbarHidden] = React.useState(true);
   const [createComment, { data, loading, error }] = useMutation(
     createCommentMutation
   );
+
+  const [
+    updateComment,
+    { data: updateData, loading: updateLoading, error: updateError },
+  ] = useMutation(updateCommentMutation);
+
   const [author, setAuthor] = React.useState("");
   const [editorState, setEditorState] = React.useState(() =>
     EditorState.createEmpty()
@@ -62,15 +81,35 @@ const MyEditor = ({
     refetch();
   }, [data, refetch]);
 
+  React.useEffect(() => {
+    if (!editData || !editData.content) return;
+    console.log(editData);
+    let newState = convertFromRaw(editData?.content || "{}");
+    setEditorState(EditorState.createWithContent(newState));
+    setAuthor(editData.author);
+  }, [editData]);
+
   const handleSubmit = () => {
     if (!author || editorState.getCurrentContent().isEmpty()) return;
-    createComment({
-      variables: {
-        movieId: movieId,
-        author: author,
-        content: convertToRaw(editorState.getCurrentContent()),
-      },
-    });
+    if (editData?.id) {
+      updateComment({
+        variables: {
+          id: parseInt(editData.id),
+          movieId: editData.movieId,
+          content: convertToRaw(editorState.getCurrentContent()),
+          author: author,
+        },
+      });
+    } else {
+      createComment({
+        variables: {
+          movieId: movieId,
+          author: author,
+          content: convertToRaw(editorState.getCurrentContent()),
+        },
+      });
+    }
+    setEdit(null);
     setEditorState(EditorState.createEmpty());
     setAuthor("");
   };

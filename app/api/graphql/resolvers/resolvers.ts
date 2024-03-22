@@ -5,6 +5,13 @@ export const resolvers = {
     comments: (parent: any, args: any, contextValue: any, info: any) => {
       return prisma.comment.findMany({
         where: { movieId: { equals: args.movieId } },
+        include: {
+          replies: {
+            include: {
+              replies: true,
+            },
+          },
+        },
       });
     },
   },
@@ -15,10 +22,14 @@ export const resolvers = {
     deleteComment: (parent: any, args: any, contextValue: any) => {
       return prisma.comment.delete({ where: { id: args.id } });
     },
+    // createReply(commentId: Int!, replyId: Int, content: JSON!, author: String!): Reply!
+    createReply: (parent: any, args: any) => {
+      return prisma.reply.create({ data: args });
+    },
     updateComment: (parent: any, args: any, contextValue: any) => {
       return prisma.comment.update({
         where: { id: args.id },
-        data: args.data,
+        data: args,
       });
     },
   },

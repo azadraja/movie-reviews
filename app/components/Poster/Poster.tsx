@@ -2,13 +2,9 @@ import Image from "next/image";
 
 const Poster = ({ imageUrl, title }: { imageUrl: string; title: string }) => {
   return (
-    <Image
-      className="grow"
-      src={imageUrl}
-      alt={title}
-      width="240"
-      height="80"
-    />
+    <div style={{ position: "relative", height: "400px" }}>
+      <Image src={imageUrl} alt={title} fill style={{ objectFit: "cover" }} />
+    </div>
   );
 };
 
