@@ -10,7 +10,7 @@ import {
 
 function makeClient() {
   const httpLink = new HttpLink({
-    uri: `${process.env.NEXT_PUBLIC_URL}`,
+    uri: `${process.env.COMMENTS_SERVER_URL}`,
     fetchOptions: { cache: "no-store" },
   });
 
