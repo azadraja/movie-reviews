@@ -10,7 +10,7 @@ import {
 
 function makeClient() {
   const httpLink = new HttpLink({
-    uri: `${process.env.COMMENTS_SERVER_URL}`,
+    uri: `https://movie-comment-server.vercel.app/api/graphql`,
     fetchOptions: { cache: "no-store" },
   });
 
