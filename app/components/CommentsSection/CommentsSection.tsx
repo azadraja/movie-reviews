@@ -110,6 +110,7 @@ const CommentsSection = ({ movieId }: { movieId: number }) => {
                 <div>
                   <button onClick={() => handleEdit(e)}>✏️</button>
                   <button onClick={() => handleDelete(e.id)}>🗑️</button>
+                  <button className={styles.replyButton}>Reply</button>
                 </div>
               </div>
             </div>

@@ -36,7 +36,7 @@ export default async function Page({ params }: { params: { id: string } }) {
       >
         <div className="w-full h-full bg-slate-600 opacity-95 px-24 flex items-center">
           <div className="flex grow gap-10">
-            <div className="h-2/3">
+            <div className="h-2/3" style={{ width: "300px" }}>
               <Poster imageUrl={imageUrl} title={movie.title} />
             </div>
             <div>
@@ -45,7 +45,7 @@ export default async function Page({ params }: { params: { id: string } }) {
               <h3 className="text-xl">Overview</h3>
               <p>{movie.overview}</p>
               <div className="flex w-full justify-between mt-10 flex-wrap">
-                {credits.crew
+                {(credits?.crew ?? [])
                   .filter((e) => e.job === "Director" || e.job === "Screenplay")
                   .map((e) => (
                     <div key={e.credit_id} className="mt-4">
@@ -59,7 +59,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         </div>
       </div>
       <div className="flex flex-wrap gap-5 justify-center items-center mt-10">
-        {credits.cast.map((e) => (
+        {(credits?.cast ?? []).map((e) => (
           <div
             key={e.name}
             style={{ width: "240px", height: "auto" }}
