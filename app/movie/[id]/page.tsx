@@ -1,12 +1,38 @@
-import CommentsSection from "@/app/components/CommentsSection/CommentsSection";
+'use client';
+
 import Poster from "@/app/components/Poster/Poster";
-import { Credits, Movie } from "@/common/types";
+
 import {
   getBackdropUrl,
-  getCreditsUrl,
-  getMovieUrl,
   getPosterUrl,
 } from "@/config";
+import { useQuery } from "@apollo/client";
+import { useParams } from 'next/navigation'
+import gql from "graphql-tag";
+
+const getMovie = gql`
+  query GetMovie($movieId: ID!) {
+  getMovie(movieId: $movieId) {
+    id
+    overview
+    poster_path
+    backdrop_path
+    title
+    vote_average
+    credits {
+      cast {
+        character
+        name
+        profile_path
+      }
+      crew {
+        job
+        name
+      }
+    }
+  }
+}
+`
 
 async function getData(url: string) {
   try {
@@ -17,38 +43,39 @@ async function getData(url: string) {
   }
 }
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const movieEndpoint: string = getMovieUrl(params.id);
-  const creditsEndpoint: string = getCreditsUrl(params.id);
-  const movie: Movie = await getData(movieEndpoint);
-  const credits: Credits = await getData(creditsEndpoint);
-  const imageUrl = movie.poster_path
-    ? getPosterUrl(movie.poster_path)
-    : "/no_image.jpeg";
+export default function Page() {
+  const {id} = useParams<{ id: string; }>()
+  
+  const { data, loading } = useQuery(getMovie, { variables: { movieId: Number(id) } })
+  // const imageUrl = movie.poster_path
+  //   ? getPosterUrl(movie.poster_path)
+  //   : "/no_image.jpeg";
+  if (loading) 
+    return (<>Loading...</>)
 
   return (
     <div>
       <div
         style={{
-          backgroundImage: `url('${getBackdropUrl(movie.backdrop_path)}')`,
+          backgroundImage: `url('${getBackdropUrl(data.getMovie.backdrop_path)}')`,
         }}
         className="flex w-screen h-[38rem] bg-no-repeat bg-cover bg-top"
       >
         <div className="w-full h-full bg-slate-600 opacity-95 px-24 flex items-center">
           <div className="flex grow gap-10">
             <div className="h-2/3">
-              <Poster imageUrl={imageUrl} title={movie.title} />
+              <Poster imageUrl={""} title={data.getMovie.title} />
             </div>
             <div>
-              <h1 className="text-4xl text-white font-bold">{movie.title}</h1>
-              <span>{`${movie.vote_average} User Score`}</span>
+              <h1 className="text-4xl text-white font-bold">{data.getMovie.title}</h1>
+              <span>{`${data.getMovie.vote_average} User Score`}</span>
               <h3 className="text-xl">Overview</h3>
-              <p>{movie.overview}</p>
+              <p>{data.getMovie.overview}</p>
               <div className="flex w-full justify-between mt-10 flex-wrap">
-                {credits.crew
-                  .filter((e) => e.job === "Director" || e.job === "Screenplay")
-                  .map((e) => (
-                    <div key={e.credit_id} className="mt-4">
+                {data.getMovie.credits.crew
+                  .filter((e: any) => e.job === "Director" || e.job === "Screenplay")
+                  .map((e: any) => (
+                    <div key={e.name} className="mt-4">
                       <div>{e.name}</div>
                       <div>{e.job}</div>
                     </div>
@@ -59,7 +86,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         </div>
       </div>
       <div className="flex flex-wrap gap-5 justify-center items-center mt-10">
-        {credits.cast.map((e) => (
+        {data.getMovie.credits.cast.map((e: any) => (
           <div
             key={e.name}
             style={{ width: "240px", height: "auto" }}
@@ -84,7 +111,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         ))}
       </div>
       <div className="mb-28">
-        <CommentsSection movieId={movie.id} />
+        {/* <CommentsSection movieId={data.getMovie.id} /> */}
       </div>
     </div>
   );

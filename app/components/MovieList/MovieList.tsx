@@ -4,38 +4,52 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 import MovieCard from "../MovieCard/MovieCard";
+import gql from "graphql-tag";
 import Pagination from "../Pagination/Pagination";
+import { useQuery } from "@apollo/client";
+
+const getPopularMovies = gql`
+  query PopularMovies($page: Int!) {
+  popularMovies(page: $page) {
+    page
+    results {
+      id
+      title
+      poster_path
+      
+    }
+    total_pages
+  }
+}
+`
 
 const MovieList = () => {
   const searchParams = useSearchParams();
-  const searchQuery = searchParams ? searchParams.get("q") : "";
   const page = searchParams ? searchParams.get("page") : 1;
-  const [data, setData] = React.useState<Results>();
+  const { data, loading, error, refetch } = useQuery(getPopularMovies, { variables: { page: Number(page) } });
+  const searchQuery = searchParams ? searchParams.get("q") : "";
+  
+  // const [data, setData] = React.useState<Results>();
+
+  
 
   React.useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch(
-          `/popular?q=${searchQuery ?? ""}&page=${page ?? 1}`
-        );
-        const data: any = await res.json();
-        setData(data);
-      } catch (error) {
-        console.error("Error occured 😱", error);
-      }
-    })();
+    refetch({variables: { page: Number(page) }})
   }, [searchQuery, page]);
-  return (
+  if(loading) {
+    return <>Loading....</>
+  }
+  return(
     <div className="flex flex-row flex-wrap w-screen mt-5">
       <div className="flex flex-row flex-wrap gap-5 justify-center">
-        {data?.results?.length &&
-          data.results.map((e) => (
+        {data?.popularMovies?.results?.length &&
+          data.popularMovies.results.map((e: any) => (
             <Link key={e.id} href={`/movie/${e.id}`}>
               <MovieCard {...e} />
             </Link>
           ))}
       </div>
-      <Pagination totalPages={data?.total_pages || 0} />
+      <Pagination totalPages={data?.popularMovies?.total_pages || 0} />
     </div>
   );
 };

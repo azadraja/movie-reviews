@@ -10,7 +10,7 @@ import {
 
 function makeClient() {
   const httpLink = new HttpLink({
-    uri: `https://movie-comment-server.vercel.app/api/graphql`,
+    uri: `http://localhost:4001/api/graphql`,
     fetchOptions: { cache: "no-store" },
   });
 
